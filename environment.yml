@@ -1,0 +1,15 @@
+name: farmbot
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - streamlit
+  - pandas
+  - numpy
+  - plotly
+  - matplotlib
+  - openpyxl
+  - python-dateutil
+  - scipy
+  - pip
