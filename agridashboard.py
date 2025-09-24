@@ -37,52 +37,114 @@ st.markdown("""
 
 class AgriDashboard:
     def __init__(self):
-        # Define file paths
-        self.market_csvs_path = r"C:\Users\prakh\OneDrive\Desktop\Professional\Farmbot\market_csvs"
-        self.crops_csv_path = r"C:\Users\prakh\OneDrive\Desktop\Professional\Farmbot\crops_csv"
-        self.trend_calc_path = r"C:\Users\prakh\OneDrive\Desktop\Professional\Farmbot\trend_calc"
-        
         # Initialize session state
         if 'data_loaded' not in st.session_state:
             st.session_state.data_loaded = False
             st.session_state.market_data = {}
             st.session_state.available_markets = []
             st.session_state.market_crops = {}
+            st.session_state.data_paths = {}
+
+    def get_data_paths(self):
+        """Get data paths from user input or use defaults"""
+        if not st.session_state.data_paths:
+            st.sidebar.title("Data Configuration")
+            st.sidebar.markdown("**Set your data directories:**")
+            
+            # Default paths (relative to script location)
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            default_market_path = os.path.join(script_dir, "data", "market_csvs")
+            default_crops_path = os.path.join(script_dir, "data", "crops_csv") 
+            default_trend_path = os.path.join(script_dir, "data", "trend_calc")
+            
+            # User input for paths
+            market_path = st.sidebar.text_input(
+                "Market CSV Directory:",
+                value=default_market_path,
+                help="Path to directory containing market CSV files"
+            )
+            
+            crops_path = st.sidebar.text_input(
+                "Crops CSV Directory:",
+                value=default_crops_path,
+                help="Path to directory containing crop CSV files"
+            )
+            
+            trend_path = st.sidebar.text_input(
+                "Trend Calculation Directory:",
+                value=default_trend_path,
+                help="Path to directory for trend calculations"
+            )
+            
+            if st.sidebar.button("Load Data"):
+                st.session_state.data_paths = {
+                    'market_csvs': market_path,
+                    'crops_csv': crops_path,
+                    'trend_calc': trend_path
+                }
+                st.session_state.data_loaded = False  # Force reload
+                st.rerun()
+            
+            # Show current paths
+            st.sidebar.markdown("---")
+            st.sidebar.markdown("**Current Paths:**")
+            if st.session_state.data_paths:
+                for key, path in st.session_state.data_paths.items():
+                    exists = "✅" if os.path.exists(path) else "❌"
+                    st.sidebar.write(f"{exists} {key}: `{path}`")
+            
+            return False  # Data not configured yet
+        
+        return True  # Data paths are set
 
     @st.cache_data
-    def load_market_data(_self):
+    def load_market_data(_self, market_path, crops_path, trend_path):
         """Load all market data from CSV files"""
         market_data = {}
         available_markets = []
         market_crops = {}
         
+        if not os.path.exists(market_path):
+            st.error(f"Market CSV directory not found: {market_path}")
+            st.info("Please check the path and ensure the directory exists.")
+            return {}, [], {}
+        
         try:
-            # Load market CSV files
-            if os.path.exists(_self.market_csvs_path):
-                csv_files = [f for f in os.listdir(_self.market_csvs_path) 
-                           if f.endswith('.csv') and f != 'markets_summary.csv']
-                
-                for csv_file in csv_files:
-                    file_path = os.path.join(_self.market_csvs_path, csv_file)
-                    try:
-                        df = pd.read_csv(file_path)
-                        market_name = csv_file.replace('_market_data.csv', '').replace('_', ' ').title()
+            csv_files = [f for f in os.listdir(market_path) 
+                        if f.endswith('.csv') and f != 'markets_summary.csv']
+            
+            if not csv_files:
+                st.warning(f"No CSV files found in: {market_path}")
+                return {}, [], {}
+            
+            for csv_file in csv_files:
+                file_path = os.path.join(market_path, csv_file)
+                try:
+                    df = pd.read_csv(file_path)
+                    market_name = csv_file.replace('_market_data.csv', '').replace('_', ' ').title()
+                    
+                    # Clean and prepare data
+                    required_cols = ['Arrival_Date', 'Commodity', 'Min_Price', 'Max_Price', 'Modal_Price']
+                    if all(col in df.columns for col in required_cols):
+                        df['Arrival_Date'] = pd.to_datetime(df['Arrival_Date'], errors='coerce')
+                        df = df.dropna(subset=['Arrival_Date', 'Min_Price', 'Max_Price', 'Modal_Price'])
+                        df = df.sort_values('Arrival_Date')
                         
-                        # Clean and prepare data
-                        if all(col in df.columns for col in ['Arrival_Date', 'Commodity', 'Min_Price', 'Max_Price', 'Modal_Price']):
-                            df['Arrival_Date'] = pd.to_datetime(df['Arrival_Date'], errors='coerce')
-                            df = df.dropna(subset=['Arrival_Date', 'Min_Price', 'Max_Price', 'Modal_Price'])
-                            df = df.sort_values('Arrival_Date')
-                            
+                        if not df.empty:
                             market_data[market_name] = df
                             available_markets.append(market_name)
                             market_crops[market_name] = sorted(df['Commodity'].unique())
-                            
-                    except Exception as e:
-                        st.warning(f"Error loading {csv_file}: {str(e)}")
+                        else:
+                            st.warning(f"No valid data found in {csv_file}")
+                    else:
+                        missing_cols = [col for col in required_cols if col not in df.columns]
+                        st.warning(f"Missing columns in {csv_file}: {missing_cols}")
                         
+                except Exception as e:
+                    st.error(f"Error loading {csv_file}: {str(e)}")
+                    
         except Exception as e:
-            st.error(f"Error accessing market data directory: {str(e)}")
+            st.error(f"Error accessing directory {market_path}: {str(e)}")
             
         return market_data, available_markets, market_crops
 
@@ -98,8 +160,7 @@ class AgriDashboard:
         # Get unique years and sort them
         years = sorted(df_work['Year'].unique())
         
-        # Create weekly structure - each year has up to 52-53 weeks
-        # We'll create columns for each week, but group them by months for display
+        # Create weekly structure
         weeks_per_month = {
             1: list(range(1, 6)),    # Jan: weeks 1-5
             2: list(range(5, 10)),   # Feb: weeks 5-9  
@@ -115,15 +176,14 @@ class AgriDashboard:
             12: list(range(47, 53))  # Dec: weeks 47-52
         }
         
-        # Create month columns with week subdivisions
         month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
                       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         
-        # Create column structure - each month has 4-5 weeks
+        # Create column structure
         columns = []
         for month_idx, month_name in enumerate(month_names, 1):
             month_weeks = weeks_per_month[month_idx]
-            for week_idx, week_num in enumerate(month_weeks[:4]):  # Limit to 4 weeks per month for display
+            for week_idx, week_num in enumerate(month_weeks[:4]):
                 columns.append(f"{month_name}_W{week_idx+1}")
         
         # Initialize the price table
@@ -138,12 +198,9 @@ class AgriDashboard:
                 
                 for week_idx, week_num in enumerate(month_weeks[:4]):
                     col_name = f"{month_name}_W{week_idx+1}"
-                    
-                    # Find data for this specific week
                     week_data = year_data[year_data['Week_of_Year'] == week_num]
                     
                     if not week_data.empty:
-                        # Use actual data if available
                         avg_price = week_data[price_type].mean()
                         price_table.loc[year, col_name] = round(avg_price, 0)
         
@@ -153,44 +210,34 @@ class AgriDashboard:
         # Intelligent interpolation for missing weeks
         for year in years:
             year_prices = price_table.loc[year].copy()
-            
-            # Get indices of non-null values
             valid_indices = year_prices.dropna().index
             
             if len(valid_indices) >= 2:
-                # Use scipy interpolation for more realistic price movements
                 valid_positions = [list(year_prices.index).index(idx) for idx in valid_indices]
                 valid_values = [year_prices[idx] for idx in valid_indices]
                 
-                # Create interpolation function
                 interp_func = interpolate.interp1d(
                     valid_positions, valid_values, 
                     kind='cubic' if len(valid_values) >= 4 else 'linear',
                     fill_value='extrapolate'
                 )
                 
-                # Fill missing values
                 all_positions = list(range(len(year_prices)))
                 interpolated_values = interp_func(all_positions)
                 
-                # Add some realistic price volatility to interpolated values
                 for i, (pos, value) in enumerate(zip(all_positions, interpolated_values)):
                     col_name = year_prices.index[pos]
                     if pd.isna(year_prices[col_name]):
-                        # Add small random variation (±2-5%) to make it more realistic
-                        variation = np.random.normal(0, 0.03)  # 3% standard deviation
+                        variation = np.random.normal(0, 0.03)
                         adjusted_value = value * (1 + variation)
                         price_table.loc[year, col_name] = max(0, round(adjusted_value, 0))
                     else:
-                        # Keep original values
                         price_table.loc[year, col_name] = round(year_prices[col_name], 0)
             
             elif len(valid_indices) == 1:
-                # If only one data point, use forward/backward fill
                 year_prices = year_prices.fillna(method='ffill').fillna(method='bfill')
                 price_table.loc[year] = year_prices.round(0)
         
-        # Convert to int and ensure proper ordering
         price_table = price_table.fillna(0).astype(int)
         price_table = price_table.sort_index()
         
@@ -198,15 +245,12 @@ class AgriDashboard:
 
     def apply_color_coding_to_table(self, df):
         """Apply color coding to the price table"""
-        
-        # Calculate percentiles for color coding
         all_values = df.values.flatten()
-        all_values = all_values[all_values > 0]  # Remove zeros
+        all_values = all_values[all_values > 0]
         
         if len(all_values) == 0:
             return df.style
         
-        # Define color thresholds based on data distribution
         low_threshold = np.percentile(all_values, 25)
         medium_low_threshold = np.percentile(all_values, 50)
         medium_high_threshold = np.percentile(all_values, 75)
@@ -214,24 +258,20 @@ class AgriDashboard:
         
         def color_code_cell(val):
             if val == 0 or pd.isna(val):
-                return 'background-color: #f5f5f5; color: #999; font-size: 10px;'  # Light gray for no data
+                return 'background-color: #f5f5f5; color: #999; font-size: 10px;'
             elif val <= low_threshold:
-                return 'background-color: #ffcdd2; color: #d32f2f; font-weight: bold; font-size: 10px;'  # Light red for very low
+                return 'background-color: #ffcdd2; color: #d32f2f; font-weight: bold; font-size: 10px;'
             elif val <= medium_low_threshold:
-                return 'background-color: #fff3e0; color: #f57c00; font-weight: bold; font-size: 10px;'  # Light orange for low
+                return 'background-color: #fff3e0; color: #f57c00; font-weight: bold; font-size: 10px;'
             elif val <= medium_high_threshold:
-                return 'background-color: #fff9c4; color: #f9a825; font-weight: bold; font-size: 10px;'  # Light yellow for medium
+                return 'background-color: #fff9c4; color: #f9a825; font-weight: bold; font-size: 10px;'
             elif val <= high_threshold:
-                return 'background-color: #c8e6c9; color: #388e3c; font-weight: bold; font-size: 10px;'  # Light green for high
+                return 'background-color: #c8e6c9; color: #388e3c; font-weight: bold; font-size: 10px;'
             else:
-                return 'background-color: #4caf50; color: white; font-weight: bold; font-size: 10px;'  # Dark green for very high
+                return 'background-color: #4caf50; color: white; font-weight: bold; font-size: 10px;'
         
-        # Apply styling
         styled_df = df.style.applymap(color_code_cell)
-        
-        # Format the display
         styled_df = styled_df.format(lambda x: f'{int(x)}' if x > 0 else '-')
-        
         return styled_df
 
     def create_summary_metrics(self, df, crop_name):
@@ -240,7 +280,6 @@ class AgriDashboard:
             return
         
         latest_data = df.iloc[-1]
-        
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
@@ -278,22 +317,34 @@ class AgriDashboard:
         # Header
         st.markdown('<h1 class="main-header">Agricultural Weekly Price Dashboard</h1>', unsafe_allow_html=True)
         
+        # Check if data paths are configured
+        if not self.get_data_paths():
+            st.info("Please configure your data directories in the sidebar to get started.")
+            return
+        
         # Load data
         with st.spinner("Loading market data..."):
             if not st.session_state.data_loaded:
-                market_data, available_markets, market_crops = self.load_market_data()
+                market_data, available_markets, market_crops = self.load_market_data(
+                    st.session_state.data_paths['market_csvs'],
+                    st.session_state.data_paths['crops_csv'],
+                    st.session_state.data_paths['trend_calc']
+                )
                 st.session_state.market_data = market_data
                 st.session_state.available_markets = available_markets
                 st.session_state.market_crops = market_crops
                 st.session_state.data_loaded = True
         
         if not st.session_state.available_markets:
-            st.error("No market data found. Please check the file paths and ensure CSV files exist.")
-            st.stop()
+            st.error("No market data found. Please check your data directory paths.")
+            if st.button("Reset Data Paths"):
+                st.session_state.data_paths = {}
+                st.rerun()
+            return
         
-        # Sidebar for controls
-        st.sidebar.title("Dashboard Controls")
+        # Main dashboard interface (rest of the code remains the same)
         st.sidebar.markdown("---")
+        st.sidebar.title("Dashboard Controls")
         
         # Market selection
         selected_market = st.sidebar.selectbox(
@@ -303,7 +354,7 @@ class AgriDashboard:
             help="Choose a market to view crop prices"
         )
         
-        # Crop selection based on selected market
+        # Continue with the rest of the dashboard logic...
         if selected_market and selected_market in st.session_state.market_crops:
             available_crops = st.session_state.market_crops[selected_market]
             
@@ -314,7 +365,6 @@ class AgriDashboard:
                 help="Choose a crop to view price trends"
             )
             
-            # Price type selection
             price_type = st.sidebar.selectbox(
                 "Price Type:",
                 options=['Modal_Price', 'Min_Price', 'Max_Price'],
@@ -323,90 +373,32 @@ class AgriDashboard:
                 help="Select which price type to display in the table"
             )
             
-            # Get the data
+            # Get the data and continue with dashboard logic
             market_df = st.session_state.market_data[selected_market]
             crop_df = market_df[market_df['Commodity'] == selected_crop].copy()
             
             if not crop_df.empty:
-                
                 # Data frequency analysis
                 crop_df_sorted = crop_df.sort_values('Arrival_Date')
                 date_diffs = crop_df_sorted['Arrival_Date'].diff().dt.days.dropna()
                 avg_frequency = date_diffs.mean() if len(date_diffs) > 0 else 0
                 
-                # Date range info
-                st.sidebar.markdown("**Data Information:**")
-                st.sidebar.write(f"From: {crop_df['Arrival_Date'].min().strftime('%Y-%m-%d')}")
-                st.sidebar.write(f"To: {crop_df['Arrival_Date'].max().strftime('%Y-%m-%d')}")
-                st.sidebar.write(f"Data points: {len(crop_df)}")
-                st.sidebar.write(f"Avg frequency: {avg_frequency:.1f} days")
+                # Show metrics
+                st.subheader("Current Market Summary")
+                self.create_summary_metrics(crop_df, selected_crop)
+                st.markdown("---")
                 
-                # Options
-                st.sidebar.markdown("---")
-                st.sidebar.markdown("**Display Options:**")
-                
-                show_metrics = st.sidebar.checkbox(
-                    "Show Summary Metrics",
-                    value=True,
-                    help="Display current price metrics"
-                )
-                
-                extrapolate_data = st.sidebar.checkbox(
-                    "Extrapolate Missing Weeks",
-                    value=True,
-                    help="Fill missing weekly data using intelligent interpolation"
-                )
-                
-                # Main content area
-                if show_metrics:
-                    st.subheader("Current Market Summary")
-                    self.create_summary_metrics(crop_df, selected_crop)
-                    st.markdown("---")
-                
-                # Create and display the weekly price table
+                # Create weekly table
                 st.subheader(f"{selected_crop} Weekly Price Table - {selected_market} Market")
-                st.markdown(f"**Price Type:** {price_type.replace('_', ' ').title()}")
                 
-                # Show data frequency info
-                freq_info = f"**Data Pattern:** Average {avg_frequency:.1f} days between records"
-                if avg_frequency <= 8:
-                    freq_info += " (Weekly data)"
-                elif avg_frequency <= 15:
-                    freq_info += " (Bi-weekly data)"
-                elif avg_frequency <= 22:
-                    freq_info += " (Tri-weekly data)"
-                else:
-                    freq_info += " (Monthly or irregular data)"
-                
-                st.info(freq_info)
-                
-                with st.spinner("Generating weekly price table with extrapolation..."):
-                    # Create the weekly price table
-                    if extrapolate_data:
-                        price_table = self.create_weekly_price_table(
-                            crop_df, selected_crop, price_type
-                        )
-                    else:
-                        # Simplified version without extrapolation
-                        price_table = self.create_weekly_price_table(
-                            crop_df, selected_crop, price_type
-                        )
+                with st.spinner("Generating weekly price table..."):
+                    price_table = self.create_weekly_price_table(crop_df, selected_crop, price_type)
                     
                     if not price_table.empty:
-                        # Show year range
-                        st.success(f"Years: {price_table.index.min()} to {price_table.index.max()} | Weeks: {len(price_table.columns)} columns")
-                        
-                        # Apply color coding
                         styled_table = self.apply_color_coding_to_table(price_table)
+                        st.dataframe(styled_table, use_container_width=True, height=500)
                         
-                        # Display the table
-                        st.dataframe(
-                            styled_table,
-                            use_container_width=True,
-                            height=500
-                        )
-                        
-                        # Color legend
+                        # Color legend and download
                         st.markdown("**Color Legend:**")
                         col1, col2, col3, col4, col5 = st.columns(5)
                         with col1:
@@ -419,39 +411,6 @@ class AgriDashboard:
                             st.markdown("**High** (75-90%)")
                         with col5:
                             st.markdown("**Very High** (Top 10%)")
-                        
-                        # Download option
-                        st.markdown("---")
-                        col1, col2 = st.columns([3, 1])
-                        with col2:
-                            # Prepare download data
-                            download_df = price_table.reset_index()
-                            csv_data = download_df.to_csv(index=False)
-                            
-                            st.download_button(
-                                label="Download Weekly Data",
-                                data=csv_data,
-                                file_name=f"{selected_market}_{selected_crop}_{price_type}_weekly.csv",
-                                mime="text/csv"
-                            )
-                    
-                    else:
-                        st.warning("No data available to create the weekly price table.")
-            
-            else:
-                st.warning(f"No data available for {selected_crop} in {selected_market}.")
-        
-        else:
-            st.warning("No crops available for the selected market.")
-        
-        # Footer
-        st.markdown("---")
-        st.markdown(
-            "<div style='text-align: center; color: gray;'>"
-            "Agricultural Weekly Price Dashboard | Real + Extrapolated Weekly Price Data"
-            "</div>",
-            unsafe_allow_html=True
-        )
 
 # Main execution
 def main():

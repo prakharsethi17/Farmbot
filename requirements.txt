@@ -1,0 +1,42 @@
+# Core Data Processing
+pandas>=1.5.0
+numpy>=1.24.0
+
+# Excel File Handling
+openpyxl>=3.1.0
+
+# Web Dashboard (Streamlit)
+streamlit>=1.28.0
+
+# Interactive Plotting and Visualization
+plotly>=5.15.0
+matplotlib>=3.5.0
+
+# Scientific Computing and Interpolation
+scipy>=1.10.0
+
+# Date and Time Handling
+python-dateutil>=2.8.0
+
+# File and Path Handling (Python 3.4+ built-in, but good to specify for older systems)
+pathlib2>=2.3.0; python_version<"3.4"
+
+# Additional utilities that might be needed
+argparse>=1.4.0; python_version<"3.2"
+warnings
+
+# Optional: For better performance with large datasets
+numba>=0.56.0
+
+# Optional: For advanced data analysis
+scikit-learn>=1.0.0
+
+# Optional: For better date parsing
+dateparser>=1.1.0
+
+# Optional: For progress bars (if you want to add them)
+tqdm>=4.64.0
+
+# Development and Testing (optional)
+pytest>=7.0.0
+pytest-cov>=4.0.0
