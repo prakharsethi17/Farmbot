@@ -41,3 +41,35 @@ A comprehensive suite of tools for processing, analyzing, and visualizing agricu
 - pip package manager
 
 ### Install Dependencies
+
+# Clone the repository
+git clone <your-repository-url>
+cd agricultural-data-toolkit
+
+# Install required packages
+pip install -r requirements.txt
+
+# Test the dashboard
+streamlit --version
+
+# Test other components
+python -c "import pandas, plotly, matplotlib; print('All packages installed successfully!')"
+
+## Quick Start
+
+# 1. Set Up Data Structure
+agricultural-data-toolkit/
+├── data/
+│   ├── raw_data.csv              # Your master CSV file
+│   ├── market_csvs/              # Split market files
+│   └── crop_excel_files/         # Excel files with crop sheets
+├── output/
+│   ├── market_csvs/              # Generated market files
+│   ├── crop_excel_files/         # Generated Excel files
+│   ├── price_charts/             # Generated charts
+│   └── analysis/                 # Analysis reports
+└── scripts/                      # All Python tools
+
+# 2. Run the Interactive Dashboard
+streamlit run agridashboard.py
+
