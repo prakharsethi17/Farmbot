@@ -5,9 +5,17 @@ import plotly.graph_objects as go
 import os
 import numpy as np
 from datetime import datetime, timedelta
-from scipy import interpolate
 import warnings
 warnings.filterwarnings('ignore')
+
+# Safe SciPy import
+try:
+    from scipy import interpolate
+    SCIPY_AVAILABLE = True
+except ImportError as e:
+    SCIPY_AVAILABLE = False
+    st.error(f"SciPy import failed: {e}")
+    st.stop()
 
 # Set page configuration
 st.set_page_config(
