@@ -1,0 +1,286 @@
+====================================================================================================
+TOP 25 CONSISTENTLY HIGH-PRICED CROPS ACROSS MARKETS AND YEARS
+(Analysis from Excel Files with Market-Crop Structure)
+====================================================================================================
+Analysis Date: 2025-09-18 13:07:24
+Data Source: 7 Excel files (381 crop sheets)
+Total Records Analyzed: 139,449
+Unique Markets: 7
+Unique Crops: 112
+Year Range: 2014.0 - 2025.0
+Price Threshold (75th percentile): ₹7279.95
+
+SELECTION CRITERIA:
+- Average modal price above 75th percentile (₹7279.95)
+- Present across multiple years (minimum 2 years)
+- Minimum 5 data points for statistical significance
+- Ranked by consistency score considering price, market presence, and stability
+
+TOP 25 HIGH-PRICED CROPS:
+----------------------------------------------------------------------------------------------------
+ 1. Black pepper
+    Average Modal Price: ₹53262.49
+    Median Modal Price:  ₹55500.00
+    Market Presence:     2 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   107
+    Consistency Score:   27446.3
+    Price Variability:   24.9% (CV)
+    Markets: Bangalore, Doddaballa Pur
+
+ 2. Cashewnuts
+    Average Modal Price: ₹54142.86
+    Median Modal Price:  ₹76000.00
+    Market Presence:     1 market(s)
+    Year Coverage:       2 year(s)
+    Total Data Points:   7
+    Consistency Score:   27277.9
+    Price Variability:   67.5% (CV)
+    Markets: Bangalore
+
+ 3. Arecanut(Betelnut_Supari)
+    Average Modal Price: ₹38509.71
+    Median Modal Price:  ₹35000.00
+    Market Presence:     2 market(s)
+    Year Coverage:       11 year(s)
+    Total Data Points:   139
+    Consistency Score:   20019.4
+    Price Variability:   27.5% (CV)
+    Markets: Bangalore, Ramanagara
+
+ 4. Dry Grapes
+    Average Modal Price: ₹24474.83
+    Median Modal Price:  ₹23000.00
+    Market Presence:     1 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   435
+    Consistency Score:   12950.9
+    Price Variability:   32.7% (CV)
+    Markets: Bangalore
+
+ 5. Dry Chillies
+    Average Modal Price: ₹18361.78
+    Median Modal Price:  ₹15000.00
+    Market Presence:     1 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   2122
+    Consistency Score:   9888.9
+    Price Variability:   60.1% (CV)
+    Markets: Bangalore
+
+ 6. Coconut
+    Average Modal Price: ₹13975.43
+    Median Modal Price:  ₹13000.00
+    Market Presence:     5 market(s)
+    Year Coverage:       10 year(s)
+    Total Data Points:   2293
+    Consistency Score:   8000.4
+    Price Variability:   36.7% (CV)
+    Markets: Bangalore, Channapatana, Doddaballa Pur, Kanakapura, Ramanagara
+
+ 7. Copra
+    Average Modal Price: ₹13259.52
+    Median Modal Price:  ₹13500.00
+    Market Presence:     3 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   284
+    Consistency Score:   7543.7
+    Price Variability:   30.3% (CV)
+    Markets: Bangalore, Kanakapura, Ramanagara
+
+ 8. Sesamum(Sesame,Gingelly,Til)
+    Average Modal Price: ₹10854.55
+    Median Modal Price:  ₹11000.00
+    Market Presence:     3 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   418
+    Consistency Score:   6339.8
+    Price Variability:   37.2% (CV)
+    Markets: Bangalore, Kanakapura, Ramanagara
+
+ 9. Soapnut(Antawala_Retha)
+    Average Modal Price: ₹11233.33
+    Median Modal Price:  ₹8600.00
+    Market Presence:     2 market(s)
+    Year Coverage:       10 year(s)
+    Total Data Points:   45
+    Consistency Score:   6321.5
+    Price Variability:   75.8% (CV)
+    Markets: Bangalore, Ramanagara
+
+10. Turmeric
+    Average Modal Price: ₹10766.06
+    Median Modal Price:  ₹10150.00
+    Market Presence:     2 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   533
+    Consistency Score:   6198.0
+    Price Variability:   25.1% (CV)
+    Markets: Bangalore, Doddaballa Pur
+
+11. Corriander seed
+    Average Modal Price: ₹10751.18
+    Median Modal Price:  ₹10500.00
+    Market Presence:     2 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   870
+    Consistency Score:   6191.3
+    Price Variability:   21.7% (CV)
+    Markets: Bangalore, Doddaballa Pur
+
+12. Black Gram Dal (Urd Dal)
+    Average Modal Price: ₹10400.97
+    Median Modal Price:  ₹10700.00
+    Market Presence:     3 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   852
+    Consistency Score:   6115.7
+    Price Variability:   23.8% (CV)
+    Markets: Bangalore, Doddaballa Pur, Hoskote
+
+13. Arhar Dal(Tur Dal)
+    Average Modal Price: ₹10018.14
+    Median Modal Price:  ₹9300.00
+    Market Presence:     4 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   829
+    Consistency Score:   6023.0
+    Price Variability:   30.2% (CV)
+    Markets: Bangalore, Doddaballa Pur, Hoskote, Kanakapura
+
+14. Arhar (Tur_Red Gram)(Whole)
+    Average Modal Price: ₹10153.71
+    Median Modal Price:  ₹10250.00
+    Market Presence:     4 market(s)
+    Year Coverage:       8 year(s)
+    Total Data Points:   259
+    Consistency Score:   5889.7
+    Price Variability:   35.8% (CV)
+    Markets: Bangalore, Doddaballa Pur, Hoskote, Ramanagara
+
+15. Apple
+    Average Modal Price: ₹10087.94
+    Median Modal Price:  ₹10000.00
+    Market Presence:     2 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   1082
+    Consistency Score:   5859.6
+    Price Variability:   22.0% (CV)
+    Markets: Binny Mill FV Bangalore, Hoskote
+
+16. Ground Nut Seed
+    Average Modal Price: ₹10233.48
+    Median Modal Price:  ₹10000.00
+    Market Presence:     1 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   988
+    Consistency Score:   5833.1
+    Price Variability:   18.0% (CV)
+    Markets: Bangalore
+
+17. Tamarind Fruit
+    Average Modal Price: ₹10013.24
+    Median Modal Price:  ₹9500.00
+    Market Presence:     1 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   963
+    Consistency Score:   5721.8
+    Price Variability:   23.9% (CV)
+    Markets: Bangalore
+
+18. Pomegranate
+    Average Modal Price: ₹9260.72
+    Median Modal Price:  ₹8650.00
+    Market Presence:     2 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   1068
+    Consistency Score:   5442.8
+    Price Variability:   37.6% (CV)
+    Markets: Binny Mill FV Bangalore, Hoskote
+
+19. Black Gram (Urd Beans)(Whole)
+    Average Modal Price: ₹9059.12
+    Median Modal Price:  ₹8850.00
+    Market Presence:     2 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   939
+    Consistency Score:   5343.9
+    Price Variability:   28.5% (CV)
+    Markets: Bangalore, Hoskote
+
+20. Green Gram Dal (Moong Dal)
+    Average Modal Price: ₹9017.72
+    Median Modal Price:  ₹9300.00
+    Market Presence:     2 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   1010
+    Consistency Score:   5325.4
+    Price Variability:   17.3% (CV)
+    Markets: Bangalore, Hoskote
+
+21. Green Gram (Moong)(Whole)
+    Average Modal Price: ₹8518.58
+    Median Modal Price:  ₹8600.00
+    Market Presence:     2 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   969
+    Consistency Score:   5075.5
+    Price Variability:   19.0% (CV)
+    Markets: Bangalore, Ramanagara
+
+22. Garlic
+    Average Modal Price: ₹8155.85
+    Median Modal Price:  ₹6500.00
+    Market Presence:     3 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   1149
+    Consistency Score:   4983.6
+    Price Variability:   71.5% (CV)
+    Markets: Bangalore, Doddaballa Pur, Hoskote
+
+23. Red Gram
+    Average Modal Price: ₹9466.44
+    Median Modal Price:  ₹9800.00
+    Market Presence:     1 market(s)
+    Year Coverage:       2 year(s)
+    Total Data Points:   9
+    Consistency Score:   4950.7
+    Price Variability:   12.5% (CV)
+    Markets: Hoskote
+
+24. Avare Dal
+    Average Modal Price: ₹7506.88
+    Median Modal Price:  ₹5900.00
+    Market Presence:     4 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   778
+    Consistency Score:   4764.5
+    Price Variability:   44.6% (CV)
+    Markets: Bangalore, Doddaballa Pur, Hoskote, Kanakapura
+
+25. Methi Seeds
+    Average Modal Price: ₹7477.79
+    Median Modal Price:  ₹7000.00
+    Market Presence:     3 market(s)
+    Year Coverage:       12 year(s)
+    Total Data Points:   475
+    Consistency Score:   4653.2
+    Price Variability:   28.7% (CV)
+    Markets: Bangalore, Doddaballa Pur, Hoskote
+
+SUMMARY STATISTICS:
+--------------------------------------------------
+Average price of top 25 crops: ₹15558.49
+Highest priced crop: Black pepper (₹53262.49)
+Most consistent crop (lowest CV): Red Gram
+Most widespread crop: Coconut
+
+MARKET BREAKDOWN:
+--------------------------------------------------
+Bangalore: 47.0 crops, avg price ₹7364.21
+Kanakapura: 32.0 crops, avg price ₹4409.14
+Hoskote: 70.0 crops, avg price ₹3710.03
+Binny Mill FV Bangalore: 51.0 crops, avg price ₹2900.06
+Ramanagara: 64.0 crops, avg price ₹2813.30
+Channapatana: 27.0 crops, avg price ₹2239.99
+Doddaballa Pur: 48.0 crops, avg price ₹2221.21

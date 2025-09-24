@@ -1,0 +1,98 @@
+wsl --install Ubuntu-24.04 --name Farmbot
+
+sudo apt update && sudo apt upgrade -y
+sudo apt install software-properties-common
+sudo apt autoremove
+
+sudo add-apt-repository ppa:deadsnakes/ppa -y
+sudo apt update
+sudo apt install python3.8 python3.8-dev python3.8-venv python3.8-distutils -y
+
+sudo apt install -y build-essential gcc g++ make
+sudo apt-key del 7fa2af80
+wget https://developer.download.nvidia.com/compute/cuda/11.6.0/local_installers/cuda_11.6.0_510.39.01_linux.run
+sudo sh cuda_11.6.0_510.39.01_linux.run --override
+echo 'export PATH=/usr/local/cuda-11.6/bin${PATH:+:${PATH}}' >> ~/.bashrc
+echo 'export CUDA_HOME=/usr/local/cuda-11.6' >> ~/.bashrc
+echo 'export LD_LIBRARY_PATH=/usr/local/cuda-11.6/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' >> ~/.bashrc
+source ~/.bashrc
+sudo apt install build-essential
+sudo apt install ninja-build
+
+mkdir -p ~/farmbot
+cd ~/farmbot
+python3.8 -m venv farmbot
+source farmbot/bin/activate
+git clone https://github.com/StructuresComp/agronav.git
+cd agronav
+pip install torch==1.13.1+cu116 torchvision==0.14.1+cu116 torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cu116
+sudo apt update
+sudo apt install gcc-10 g++-10 -y
+export CC=/usr/bin/gcc-10
+export CXX=/usr/bin/g++-10
+export CUDAHOSTCXX=/usr/bin/g++-10
+sudo ln -sf /usr/bin/gcc-10 /usr/local/cuda-11.6/bin/gcc
+sudo ln -sf /usr/bin/g++-10 /usr/local/cuda-11.6/bin/g++
+export CUDA_HOST_COMPILER=/usr/bin/g++-10
+export MMCV_WITH_OPS=1
+export FORCE_CUDA=1
+CC=/usr/bin/gcc-10 CXX=/usr/bin/g++-10 CUDAHOSTCXX=/usr/bin/g++-10 pip install mmcv-full==1.7.1 -f https://download.openmmlab.com/mmcv/dist/cu116/torch1.13.0/index.html
+cd segmentation
+pip install -v -e .
+cd ..
+pip install numpy scipy scikit-image pqdm opencv-python yml POT pudb 
+cd lineDetection/model/_cdht
+CC=/usr/bin/gcc-10 CXX=/usr/bin/g++-10 CUDAHOSTCXX=/usr/bin/g++-10 python setup.py build
+CC=/usr/bin/gcc-10 CXX=/usr/bin/g++-10 CUDAHOSTCXX=/usr/bin/g++-10 python setup.py install
+cd ../../..
+mkdir -p data/agronav/images
+mkdir -p data/agronav/labels
+mkdir -p data/training
+mkdir -p inference/input
+mkdir -p inference/output
+mkdir -p inference/output_centerline
+mkdir -p inference/temp
+mkdir -p segmentation/checkpoint
+mkdir -p lineDetection/checkpoint
+pip uninstall yapf -y
+pip install yapf==0.40.1
+export LD_LIBRARY_PATH=/usr/lib/wsl/lib:$LD_LIBRARY_PATH
+echo 'export LD_LIBRARY_PATH=/usr/lib/wsl/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
+source ~/.bashrc
+
+# Place test images in input directory
+cp your_images.jpg inference/input/
+
+# Download pre-trained models (links from original repo)
+# Place segmentation models in: segmentation/checkpoint/
+# Place line detection models in: lineDetection/checkpoint/
+
+# Run end-to-end inference
+python e2e_inference_image.py
+
+# Results will be in: inference/output_centerline/
+
+Training Setup (Optional)
+For training new models:
+
+Semantic Segmentation:
+bash
+# Download Agroscapes dataset
+# Extract images to: data/agronav/images/
+# Extract labels to: data/agronav/labels/
+# Configure agronav.py with paths
+# Run: python train-agronav.py
+Line Detection:
+bash
+cd lineDetection
+# Download AgroNav_LineDetection dataset to data/
+python data/prepare_data_NKL.py --root './data/agroNav_LineDetection' --label './data/agroNav_LineDetection' --save-dir './data/training/agroNav_LineDetection_resized_100_100' --fixsize 400
+python data/extractFilenameList.py
+# Configure config.yml
+# Run: python train.py
+
+
+
+
+
+
