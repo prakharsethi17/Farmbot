@@ -248,6 +248,8 @@ class AgriDashboard:
         
         price_table = price_table.fillna(0).astype(int)
         price_table = price_table.sort_index()
+
+        price_table.index = price_table.index.map(lambda y: str(int(y)))
         
         return price_table
 
