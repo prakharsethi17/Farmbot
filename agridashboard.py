@@ -400,7 +400,7 @@ class AgriDashboard:
                 
                 # Create weekly table
                 st.subheader(f"{selected_crop} Weekly Price Table - {selected_market} Market")
-                st.markdown("*all prices per quintal*")
+                st.markdown("*(all prices per quintal)*")
                 
                 with st.spinner("Generating weekly price table..."):
                     price_table = self.create_weekly_price_table(crop_df, selected_crop, price_type)
