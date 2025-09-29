@@ -281,7 +281,7 @@ class AgriDashboard:
                 return 'background-color: #4caf50; color: white; font-weight: bold; font-size: 10px;'
         
         styled_df = df.style.applymap(color_code_cell)
-        styled_df = styled_df.format(lambda x: f'{int(x)}' if x > 0 else '-')
+        styled_df = styled_df.format(lambda x: f'₹{int(x)}' if x > 0 else '-')
         return styled_df
 
     def create_summary_metrics(self, df, crop_name):
@@ -400,6 +400,7 @@ class AgriDashboard:
                 
                 # Create weekly table
                 st.subheader(f"{selected_crop} Weekly Price Table - {selected_market} Market")
+                st.markdown("*all prices per quintal*")
                 
                 with st.spinner("Generating weekly price table..."):
                     price_table = self.create_weekly_price_table(crop_df, selected_crop, price_type)
